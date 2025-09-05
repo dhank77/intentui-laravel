@@ -13,7 +13,7 @@ test('login screen can be rendered', function () {
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->create();
 
-    $response = $this->post(route('login.store'), [
+    $response = $this->post(route('login'), [
         'email' => $user->email,
         'password' => 'password',
     ]);
@@ -25,7 +25,7 @@ test('users can authenticate using the login screen', function () {
 test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
-    $this->post(route('login.store'), [
+    $this->post(route('login'), [
         'email' => $user->email,
         'password' => 'wrong-password',
     ]);
@@ -39,14 +39,14 @@ test('users can logout', function () {
     $response = $this->actingAs($user)->post(route('logout'));
 
     $this->assertGuest();
-    $response->assertRedirect(route('home'));
+    $response->assertRedirect('/');
 });
 
 test('users are rate limited', function () {
     $user = User::factory()->create();
 
     for ($i = 0; $i < 5; $i++) {
-        $this->post(route('login.store'), [
+        $this->post(route('login'), [
             'email' => $user->email,
             'password' => 'wrong-password',
         ])->assertStatus(302)->assertSessionHasErrors([
@@ -54,7 +54,7 @@ test('users are rate limited', function () {
         ]);
     }
 
-    $response = $this->post(route('login.store'), [
+    $response = $this->post(route('login'), [
         'email' => $user->email,
         'password' => 'wrong-password',
     ]);
